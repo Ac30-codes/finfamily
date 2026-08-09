@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Member, Transaction, Goal
-from .forms import TransactionForm
 from .engine import analyse_goal
+from django.contrib.auth import login
+from .forms import TransactionForm, SignupForm
+from .models import Household, Member, Transaction, Goal
 
 @login_required
 def dashboard(request):
@@ -54,3 +55,16 @@ def dashboard(request):
         "analysis": analysis,
     }
     return render(request, "core/dashboard.html", context)
+
+def signup(request):
+    if request.method == "POST":
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            household = Household.objects.create(name=form.cleaned_data["household_name"])
+            Member.objects.create(user=user, household=household, role="admin")
+            login(request, user)
+            return redirect("dashboard")
+    else:
+        form = SignupForm()
+    return render(request, "core/signup.html", {"form": form})
