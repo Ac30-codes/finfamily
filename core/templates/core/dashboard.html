@@ -43,6 +43,67 @@
     {% endif %}
 
     <p class="meta">Sustainable surplus: ₹{{ analysis.surplus }} ·
+        <div class="card" id="slider-card"
+         data-surplus="{{ analysis.surplus }}"
+         data-protection="{{ analysis.protection }}"
+         data-discretionary="{{ discretionary }}"
+         data-target="{{ goal.target_amount }}"
+         data-saved="{{ goal.saved_amount }}">
+        <h2 style="margin-top:0">Reach it sooner — try cutting discretionary spend</h2>
+
+        <p>Discretionary spending: <strong>₹<span id="disc-value">{{ discretionary }}</span></strong> / month</p>
+        <input type="range" id="disc-slider"
+               min="0" max="{{ discretionary }}" value="{{ discretionary }}" step="500"
+               style="width:100%">
+
+        <p style="margin-top:16px; font-size:18px;">
+            At this spending, you reach the goal in
+            <strong id="months-result" style="color:var(--brass-deep)">—</strong> months.
+            <span id="saved-badge" style="color:var(--green); font-weight:600;"></span>
+        </p>
+    </div>
+
+    <script>
+        const card = document.getElementById('slider-card');
+        const surplus = parseFloat(card.dataset.surplus);
+        const protection = parseFloat(card.dataset.protection);
+        const baseDisc = parseFloat(card.dataset.discretionary);
+        const target = parseFloat(card.dataset.target);
+        const saved = parseFloat(card.dataset.saved);
+        const remaining = target - saved;
+
+        const slider = document.getElementById('disc-slider');
+        const discValue = document.getElementById('disc-value');
+        const monthsResult = document.getElementById('months-result');
+        const savedBadge = document.getElementById('saved-badge');
+
+        function monthsFor(disc) {
+            const goalAllocation = surplus - protection - disc;
+            if (goalAllocation <= 0) return null;
+            return Math.ceil(remaining / goalAllocation);
+        }
+
+        const baseMonths = monthsFor(baseDisc);
+
+        function update() {
+            const disc = parseFloat(slider.value);
+            discValue.textContent = disc.toLocaleString('en-IN');
+            const months = monthsFor(disc);
+
+            if (months === null) {
+                monthsResult.textContent = '—';
+                savedBadge.textContent = '';
+                return;
+            }
+            monthsResult.textContent = months;
+
+            const saved = baseMonths - months;
+            savedBadge.textContent = saved > 0 ? `(${saved} months sooner!)` : '';
+        }
+
+        slider.addEventListener('input', update);
+        update();
+    </script>
        Protection kept: ₹{{ analysis.protection }} ·
        At current pace: {{ analysis.months_at_current }} months to goal</p>
     {% endif %}
