@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinFamily — Dashboard</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <h1>{{ household.name }}</h1>
+    <p class="topbar">Logged in as {{ request.user.username }} — <a href="/accounts/logout/">Log out</a></p>
+
+    <h2>This month</h2>
+    <ul class="stats">
+        <li>Income <b>₹{{ income }}</b></li>
+        <li>Essential <b>₹{{ essential }}</b></li>
+        <li>Committed <b>₹{{ committed }}</b></li>
+        <li>Discretionary <b>₹{{ discretionary }}</b></li>
+        <li class="surplus">Sustainable surplus <b>₹{{ surplus }}</b></li>
+    </ul>
+
+    {% if analysis %}
+    <h2>Goal: {{ goal.name }} — ₹{{ goal.target_amount }} in {{ goal.target_months }} months</h2>
+
+    {% if analysis.verdict == "feasible" %}
+        <div class="verdict yes">
+            <strong>Reachable in {{ goal.target_months }} months.</strong>
+            Save ₹{{ analysis.required }} a month and you're on track.
+        </div>
+    {% elif analysis.verdict == "feasible_with_cut" %}
+        <div class="verdict yes">
+            <strong>Reachable — if you trim spending.</strong>
+            It needs ₹{{ analysis.required }} a month. Cut some discretionary spending and it's on time.
+        </div>
+    {% else %}
+        <div class="verdict no">
+            <strong>Not reachable in {{ goal.target_months }} months.</strong>
+            It needs ₹{{ analysis.required }} a month, but the most you can save is
+            ₹{{ analysis.max_goal_allocation }} — a shortfall of ₹{{ analysis.shortfall }}.
+            At your best effort you'd reach it in about {{ analysis.realistic_months }} months.
+        </div>
+    {% endif %}
+
+    <p class="meta">Sustainable surplus: ₹{{ analysis.surplus }} ·
+       Protection kept: ₹{{ analysis.protection }} ·
+       At current pace: {{ analysis.months_at_current }} months to goal</p>
+    {% endif %}
+
+    <div class="card">
+        <h2 style="margin-top:0">Add a transaction</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add</button>
+        </form>
+    </div>
+
+    <h2>Transactions</h2>
+    <table>
+        <tr><th>Name</th><th>Amount</th><th>Tier</th><th>Member</th></tr>
+        {% for t in transactions %}
+        <tr>
+            <td>{{ t.name }}</td>
+            <td>₹{{ t.amount }}</td>
+            <td><span class="badge t-{{ t.tier }}">{{ t.get_tier_display }}</span></td>
+            <td>{{ t.member.user.username }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
