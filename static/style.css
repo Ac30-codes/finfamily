@@ -50,3 +50,36 @@
   .t-essential{background:#E4EEF0; color:#2C5560}
   .t-committed{background:#EFE2C2; color:var(--brass-deep)}
   .t-discretionary{background:#F4E0DE; color:#9C4742}
+
+  /* --- Mobile responsiveness --- */
+@media (max-width: 640px) {
+  body {
+    padding: 18px 14px 50px;
+  }
+  h1 { font-size: 24px; }
+  h2 { font-size: 17px; }
+
+  /* stack the stat cards into one column */
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  /* let form inputs use full width instead of a fixed 220px */
+  input, select {
+    min-width: 0;
+    width: 100%;
+  }
+  button {
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  /* stop the transactions table overflowing — let it scroll sideways */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .verdict strong { font-size: 16px; }
+}
