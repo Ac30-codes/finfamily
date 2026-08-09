@@ -31,7 +31,19 @@ FinFamily answers *"is this goal reachable at all — and if not, what are our o
 
 No commercial family finance app performs this feasibility test.
 
-**3. Multi-user households.** Every family member has their own login and role (Administrator, Earner, Contributor, Dependant), all contributing to one shared household picture.
+**3. Interactive acceleration slider.** Drag to reduce discretionary spending and watch the goal timeline recalculate live — *"cut spending to ₹36,000 → reach your goal 5 months sooner."*
+
+**4. Multi-user households.** Every family registers their own account with a role (Administrator, Earner, Contributor, Dependant), each contributing to one shared household picture, with data kept separate between families.
+
+## Features
+
+- 🔐 Sign up to create a household, or log in — full authentication
+- 👨‍👩‍👧 Multiple members per household, each with a role
+- 💸 Add income & expenses, auto-classified into three tiers
+- 📊 Live dashboard: income, spending by tier, and sustainable surplus
+- 🎯 Goal feasibility engine with an honest reachable / not-reachable verdict
+- 🎚️ Interactive slider showing how spending cuts accelerate a goal
+- 📱 Responsive on desktop and mobile
 
 ## Worked Example (live in the app)
 
@@ -45,7 +57,7 @@ The engine reports: *needs ₹83,333/month, but the most safely saveable is ₹5
 |---|---|
 | Backend | Python · Django |
 | Database | SQLite |
-| Frontend | Django Templates · HTML · CSS |
+| Frontend | Django Templates · HTML · CSS · JavaScript |
 | Auth | Django's built-in authentication |
 
 The feasibility engine is written as a **pure, database-independent function** (`core/engine.py`) — making it correct, testable, and reusable.
@@ -54,7 +66,7 @@ The feasibility engine is written as a **pure, database-independent function** (
 
 ```bash
 # clone and enter the project
-git clone <your-repo-url>
+git clone https://github.com/Ac-30codes/finfamily.git
 cd finfamily
 
 # create and activate a virtual environment
@@ -73,14 +85,21 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Then open **http://127.0.0.1:8000/** and log in.
+Then open **http://127.0.0.1:8000/** — sign up to create a household, or log in.
+
+## Try the Demo Flow
+
+1. **Sign up** at `/signup/` — creates a fresh household and logs you in
+2. **Add transactions** across all four tiers (income, essential, committed, discretionary)
+3. **Set a goal** and see the feasibility verdict
+4. **Drag the acceleration slider** to watch the timeline shorten
 
 ## Scope & Honesty
 
-**Built and working:** multi-user households, tiered transaction tracking, the goal feasibility engine, a login-protected dashboard.
+**Built and working:** multi-user households with authentication, tiered transaction tracking, the goal feasibility engine, the interactive acceleration slider, and a responsive dashboard.
 
-**Designed but not yet built** (documented as future scope): automatic bank-statement import, ML-based transaction categorisation, and an interactive acceleration slider. We've deliberately scoped this to what genuinely works rather than overclaiming.
+**Designed but not yet built** (documented as future scope): automatic bank-statement import, ML-based transaction categorisation, and graduated privacy controls between household members. We've deliberately scoped this to what genuinely works rather than overclaiming.
 
 ## Team
 
-[Your names / roll numbers here]
+[Armaan Chopra / B028]
