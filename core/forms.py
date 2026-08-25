@@ -3,7 +3,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Transaction, Member, RecurringRule, Goal
 
-
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
@@ -28,3 +27,8 @@ class JoinFamilyForm(UserCreationForm):
     class Meta:
         model = User
         fields = ["username", "join_code", "requested_role"]
+
+class RecurringRuleForm(forms.ModelForm):
+    class Meta:
+        model = RecurringRule
+        fields = ["name", "amount", "tier", "day_of_month"]

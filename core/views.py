@@ -6,6 +6,8 @@ from .models import Member, Transaction, Goal, Household, RecurringRule
 from .forms import TransactionForm, StartFamilyForm, JoinFamilyForm
 from .engine import analyse_goal
 from django.contrib.auth import login, logout
+from .recurring import process_recurring
+from .forms import RecurringRuleForm
 
 
 def welcome(request):
@@ -118,3 +120,34 @@ def approve_member(request, member_id):
 def logout_view(request):
     logout(request)
     return redirect("welcome")
+
+@login_required
+def recurring(request):
+    member = Member.objects.get(user=request.user)
+    if member.status == "pending":
+        return render(request, "core/pending.html", {"member": member})
+    household = member.household
+
+    process_recurring(household)
+
+    if request.method == "POST":
+        if "delete" in request.POST:
+            RecurringRule.objects.filter(
+                id=request.POST["delete"], household=household
+            ).delete()
+            return redirect("recurring")
+        form = RecurringRuleForm(request.POST)
+        if form.is_valid():
+            rule = form.save(commit=False)
+            rule.household = household
+            rule.member = member
+            rule.save()
+            return redirect("recurring")
+    else:
+        form = RecurringRuleForm()
+
+    rules = RecurringRule.objects.filter(household=household)
+    return render(request, "core/recurring.html", {
+        "member": member, "household": household,
+        "form": form, "rules": rules,
+    })

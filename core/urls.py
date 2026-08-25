@@ -8,4 +8,5 @@ urlpatterns = [
     path("join/", views.join_family, name="join_family"),
     path("approve/<int:member_id>/", views.approve_member, name="approve_member"),
     path("logout/", views.logout_view, name="logout"),
+    path("recurring/", views.recurring, name="recurring"),
 ]

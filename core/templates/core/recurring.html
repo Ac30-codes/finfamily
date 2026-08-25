@@ -1,0 +1,47 @@
+{% extends "core/base.html" %}
+
+{% block title %}Recurring{% endblock %}
+{% block nav_recurring %}active{% endblock %}
+
+{% block content %}
+<h1>Recurring income & expenses</h1>
+<p style="color:var(--ink-soft); max-width:60ch;">
+    Set up income and expenses that repeat every month — like a salary on the 7th
+    or rent on the 10th. They post automatically when their day arrives.
+</p>
+
+<div class="card">
+    <h2 style="margin-top:0">Add a recurring rule</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add rule</button>
+    </form>
+</div>
+
+<h2>Your recurring rules</h2>
+{% if rules %}
+<table>
+    <tr><th>Name</th><th>Amount</th><th>Tier</th><th>Day</th><th></th></tr>
+    {% for rule in rules %}
+    <tr>
+        <td>{{ rule.name }}</td>
+        <td>₹{{ rule.amount }}</td>
+        <td><span class="badge t-{{ rule.tier }}">{{ rule.get_tier_display }}</span></td>
+        <td>Day {{ rule.day_of_month }} of month</td>        
+         <td>
+            <form method="post" style="margin:0;">
+                {% csrf_token %}
+                <button type="submit" name="delete" value="{{ rule.id }}"
+                        style="background:var(--amber); padding:6px 12px; font-size:13px;">
+                    Delete
+                </button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p style="color:var(--ink-faint);">No recurring rules yet — add one above.</p>
+{% endif %}
+{% endblock %}
