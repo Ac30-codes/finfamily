@@ -9,8 +9,31 @@
 </head>
 <body>
     <h1>{{ household.name }}</h1>
-    <p class="topbar">Logged in as {{ request.user.username }} — <a href="/accounts/logout/">Log out</a></p>
-
+    <p class="topbar">Logged in as {{ request.user.username }} — <a href="/logout/">Log out</a></p>
+    {% if member.role == "admin" %}
+    <div class="card" style="border-left:6px solid var(--brass);">
+        <h2 style="margin-top:0">Your family code</h2>
+        <p>Share this code so members can join <strong>{{ household.name }}</strong>:</p>
+        <p style="font-size:28px; font-weight:700; letter-spacing:4px; color:var(--brass-deep); font-family:monospace;">
+            {{ household.join_code }}
+        </p>
+    </div>
+    {% endif %}
+    
+    {% if pending_members %}
+    <div class="card" style="border-left:6px solid var(--brass);">
+        <h2 style="margin-top:0">Pending join requests</h2>
+        {% for pm in pending_members %}
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--line);">
+            <span>
+                <strong>{{ pm.user.username }}</strong>
+                wants to join as <strong>{{ pm.get_requested_role_display }}</strong>
+            </span>
+            <a href="/approve/{{ pm.id }}/"><button>Approve</button></a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <h2>This month</h2>
     <ul class="stats">
         <li>Income <b>₹{{ income }}</b></li>

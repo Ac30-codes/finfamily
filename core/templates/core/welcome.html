@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinFamily — Welcome</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <h1>Welcome to FinFamily 🏠</h1>
+    <p class="topbar">Manage your household's money together.</p>
+
+    <div class="card">
+        <h2 style="margin-top:0">Start a new family</h2>
+        <p>Create a household and get a family code to share with your members.</p>
+        <a href="/start/"><button>Start a family</button></a>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-top:0">Join an existing family</h2>
+        <p>Have a family code? Join your household and pick your role.</p>
+        <a href="/join/"><button>Join a family</button></a>
+    </div>
+
+    <p class="topbar" style="margin-top:16px">Already a member? <a href="/accounts/login/">Log in</a></p>
+</body>
+</html>

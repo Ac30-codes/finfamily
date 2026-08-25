@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinFamily — Awaiting approval</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <h1>Almost there ⏳</h1>
+    <p class="topbar">Logged in as {{ member.user.username }} — <a href="/logout/">Log out</a></p>
+    <div class="card">
+        <h2 style="margin-top:0">Waiting for approval</h2>
+        <p>You've requested to join <strong>{{ member.household.name }}</strong>
+           as <strong>{{ member.get_requested_role_display }}</strong>.</p>
+        <p>The family administrator needs to approve you before you can see the dashboard.
+           Check back shortly, or refresh this page.</p>
+    </div>
+</body>
+</html>
