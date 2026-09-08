@@ -32,3 +32,13 @@ class RecurringRuleForm(forms.ModelForm):
     class Meta:
         model = RecurringRule
         fields = ["name", "amount", "tier", "day_of_month"]
+
+class GoalForm(forms.ModelForm):
+    is_personal = forms.BooleanField(
+        required=False, label="This is my personal goal (not the whole family's)"
+    )
+
+    class Meta:
+        model = Goal
+        fields = ["name", "target_amount", "target_date", "target_months", "saved_amount"]
+        widgets = {"target_date": forms.DateInput(attrs={"type": "date"})}

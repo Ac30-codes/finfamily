@@ -8,6 +8,8 @@ from .engine import analyse_goal
 from django.contrib.auth import login, logout
 from .recurring import process_recurring
 from .forms import RecurringRuleForm
+from .engine import analyse_goal, suggest_term
+from .forms import GoalForm
 
 
 def welcome(request):
@@ -150,4 +152,49 @@ def recurring(request):
     return render(request, "core/recurring.html", {
         "member": member, "household": household,
         "form": form, "rules": rules,
+        "term_labels": [("short", "Short term"), ("medium", "Medium term"), ("long", "Long term")],
+    })
+
+@login_required
+def goals(request):
+    member = Member.objects.get(user=request.user)
+    if member.status == "pending":
+        return render(request, "core/pending.html", {"member": member})
+    household = member.household
+
+    if request.method == "POST":
+        if "delete" in request.POST:
+            Goal.objects.filter(id=request.POST["delete"], household=household).delete()
+            return redirect("goals")
+        form = GoalForm(request.POST)
+        if form.is_valid():
+            goal = form.save(commit=False)
+            goal.household = household
+            goal.owner = member if form.cleaned_data["is_personal"] else None
+            goal.term = suggest_term(goal.target_date)
+            goal.save()
+            return redirect("goals")
+    else:
+        form = GoalForm()
+
+    # compute household totals once, for feasibility on each goal
+    txns = Transaction.objects.filter(household=household)
+    income = sum(t.amount for t in txns if t.tier == "income")
+    essential = sum(t.amount for t in txns if t.tier == "essential")
+    committed = sum(t.amount for t in txns if t.tier == "committed")
+    discretionary = sum(t.amount for t in txns if t.tier == "discretionary")
+
+    goals_by_term = {"short": [], "medium": [], "long": []}
+    for g in Goal.objects.filter(household=household):
+        analysis = analyse_goal(
+            income=float(income), essential=float(essential),
+            committed=float(committed), discretionary=float(discretionary),
+            target_amount=float(g.target_amount), target_months=g.target_months,
+            saved_amount=float(g.saved_amount),
+        )
+        goals_by_term.setdefault(g.term, []).append({"goal": g, "analysis": analysis})
+
+    return render(request, "core/goals.html", {
+        "member": member, "household": household,
+        "form": form, "goals_by_term": goals_by_term,
     })

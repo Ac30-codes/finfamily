@@ -1,0 +1,65 @@
+{% extends "core/base.html" %}
+{% load goal_extras %}
+
+{% block title %}Goals{% endblock %}
+{% block nav_goals %}active{% endblock %}
+
+{% block content %}
+<h1>Goals</h1>
+<p style="color:var(--ink-soft); max-width:60ch;">
+    Add family or personal goals. Each is sorted by term and checked for whether
+    it's actually reachable at your current surplus.
+</p>
+
+<div class="card">
+    <h2 style="margin-top:0">Add a goal</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add goal</button>
+    </form>
+</div>
+
+{% for term, label in term_labels %}
+<h2>{{ label }}</h2>
+{% with items=goals_by_term|dict_get:term %}
+{% if items %}
+    {% for item in items %}
+    <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:start;">
+            <div>
+                <h3 style="margin:0;">{{ item.goal.name }}</h3>
+                <p style="margin:4px 0; color:var(--ink-soft); font-size:13px;">
+                    {% if item.goal.owner %}Personal — {{ item.goal.owner.user.username }}{% else %}Family goal{% endif %}
+                    · Target ₹{{ item.goal.target_amount }}
+                    {% if item.goal.target_date %} by {{ item.goal.target_date }}{% endif %}
+                </p>
+            </div>
+            <form method="post" style="margin:0;">
+                {% csrf_token %}
+                <button type="submit" name="delete" value="{{ item.goal.id }}"
+                        style="background:var(--amber); padding:6px 12px; font-size:13px;">Delete</button>
+            </form>
+        </div>
+        {% if item.analysis.verdict == "feasible" %}
+        <div style="background:var(--green-soft); padding:10px 14px; border-radius:8px; margin-top:8px;">
+            <strong>Reachable.</strong> Save ₹{{ item.analysis.required }}/month.
+        </div>
+        {% elif item.analysis.verdict == "feasible_with_cut" %}
+        <div style="background:var(--green-soft); padding:10px 14px; border-radius:8px; margin-top:8px;">
+            <strong>Reachable with a trim.</strong> Needs ₹{{ item.analysis.required }}/month.
+        </div>
+        {% else %}
+        <div style="background:var(--amber-soft); padding:10px 14px; border-radius:8px; margin-top:8px;">
+            <strong>Not reachable yet.</strong> Needs ₹{{ item.analysis.required }}/month,
+            max saveable ₹{{ item.analysis.max_goal_allocation }}.
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <p style="color:var(--ink-faint);">No {{ label|lower }} goals yet.</p>
+{% endif %}
+{% endwith %}
+{% endfor %}
+{% endblock %}

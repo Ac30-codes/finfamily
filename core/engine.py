@@ -1,4 +1,5 @@
 import math
+from datetime import date
 
 # Guardrails from the proposal
 DISCRETIONARY_FLOOR_RATIO = 0.5   # can't cut discretionary below half of current
@@ -53,3 +54,15 @@ def analyse_goal(income, essential, committed, discretionary, target_amount, tar
         "realistic_months": realistic_months,
         "shortfall": round(required - max_goal_allocation) if verdict == "infeasible" else 0,
     }
+    
+
+def suggest_term(target_date):
+    """Short <1yr, medium 1-3yr, long >3yr — from months until target."""
+    if not target_date:
+        return "medium"
+    months = (target_date.year - date.today().year) * 12 + (target_date.month - date.today().month)
+    if months <= 12:
+        return "short"
+    elif months <= 36:
+        return "medium"
+    return "long"
