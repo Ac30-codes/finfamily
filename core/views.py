@@ -197,4 +197,5 @@ def goals(request):
     return render(request, "core/goals.html", {
         "member": member, "household": household,
         "form": form, "goals_by_term": goals_by_term,
+        "term_labels": [("short", "Short term"), ("medium", "Medium term"), ("long", "Long term")],
     })
