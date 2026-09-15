@@ -10,4 +10,6 @@ urlpatterns = [
     path("logout/", views.logout_view, name="logout"),
     path("recurring/", views.recurring, name="recurring"),
     path("goals/", views.goals, name="goals"),
+    path("income/", views.income, name="income"),
+    path("expenses/", views.expenses, name="expenses"),
 ]

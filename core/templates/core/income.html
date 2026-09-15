@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+
+{% block title %}Income{% endblock %}
+{% block nav_income %}active{% endblock %}
+
+{% block content %}
+<h1>Income</h1>
+<p style="color:var(--ink-soft); max-width:60ch;">
+    Everything the household earns. Total this month:
+    <strong>₹{{ total }}</strong>.
+</p>
+
+<div class="card">
+    <h2 style="margin-top:0">Add income</h2>
+    <form method="post">
+        {% csrf_token %}
+        <p>Name: {{ form.name }}</p>
+        <p>Amount: {{ form.amount }}</p>
+        <button type="submit">Add income</button>
+    </form>
+</div>
+
+<h2>Income entries</h2>
+{% if incomes %}
+<table>
+    <tr><th>Name</th><th>Amount</th><th>Member</th><th></th></tr>
+    {% for t in incomes %}
+    <tr>
+        <td>{{ t.name }}</td>
+        <td>₹{{ t.amount }}</td>
+        <td>{{ t.member.user.username }}</td>
+        <td>
+            <form method="post" style="margin:0;">
+                {% csrf_token %}
+                <button type="submit" name="delete" value="{{ t.id }}"
+                        style="background:var(--amber); padding:6px 12px; font-size:13px;">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p style="color:var(--ink-faint);">No income recorded yet — add some above.</p>
+{% endif %}
+{% endblock %}

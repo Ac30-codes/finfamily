@@ -42,3 +42,8 @@ class GoalForm(forms.ModelForm):
         model = Goal
         fields = ["name", "target_amount", "target_date", "target_months", "saved_amount"]
         widgets = {"target_date": forms.DateInput(attrs={"type": "date"})}
+
+class SimpleTransactionForm(forms.ModelForm):
+    class Meta:
+        model = Transaction
+        fields = ["name", "amount"]

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.shortcuts import get_object_or_404
 from .models import Member, Transaction, Goal, Household, RecurringRule
-from .forms import TransactionForm, StartFamilyForm, JoinFamilyForm
+from .forms import TransactionForm, StartFamilyForm, JoinFamilyForm, RecurringRuleForm, GoalForm, SimpleTransactionForm
 from .engine import analyse_goal
 from django.contrib.auth import login, logout
 from .recurring import process_recurring
@@ -198,4 +198,65 @@ def goals(request):
         "member": member, "household": household,
         "form": form, "goals_by_term": goals_by_term,
         "term_labels": [("short", "Short term"), ("medium", "Medium term"), ("long", "Long term")],
+    })
+
+@login_required
+def income(request):
+    member = Member.objects.get(user=request.user)
+    if member.status == "pending":
+        return render(request, "core/pending.html", {"member": member})
+    household = member.household
+
+    if request.method == "POST":
+        if "delete" in request.POST:
+            Transaction.objects.filter(
+                id=request.POST["delete"], household=household
+            ).delete()
+            return redirect("income")
+        form = SimpleTransactionForm(request.POST)
+        if form.is_valid():
+            t = form.save(commit=False)
+            t.household = household
+            t.member = member
+            t.tier = "income"          # force this page's entries to income
+            t.save()
+            return redirect("income")
+    else:
+        form = SimpleTransactionForm()
+
+    incomes = Transaction.objects.filter(household=household, tier="income")
+    total = sum(t.amount for t in incomes)
+    return render(request, "core/income.html", {
+        "member": member, "household": household,
+        "form": form, "incomes": incomes, "total": total,
+    })
+
+@login_required
+def expenses(request):
+    member = Member.objects.get(user=request.user)
+    if member.status == "pending":
+        return render(request, "core/pending.html", {"member": member})
+    household = member.household
+
+    if request.method == "POST":
+        if "delete" in request.POST:
+            Transaction.objects.filter(
+                id=request.POST["delete"], household=household
+            ).delete()
+            return redirect("expenses")
+        form = TransactionForm(request.POST)   # full form — expenses need a tier
+        if form.is_valid():
+            t = form.save(commit=False)
+            t.household = household
+            t.member = member
+            t.save()
+            return redirect("expenses")
+    else:
+        form = TransactionForm()
+
+    items = Transaction.objects.filter(household=household).exclude(tier="income")
+    total = sum(t.amount for t in items)
+    return render(request, "core/expenses.html", {
+        "member": member, "household": household,
+        "form": form, "items": items, "total": total,
     })
