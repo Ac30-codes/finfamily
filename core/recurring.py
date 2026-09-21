@@ -31,6 +31,7 @@ def process_recurring(household):
             name=rule.name,
             amount=rule.amount,
             tier=rule.tier,
+            date=today,
         )
         rule.last_run = today
         rule.save()

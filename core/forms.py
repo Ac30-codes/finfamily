@@ -6,7 +6,8 @@ from .models import Transaction, Member, RecurringRule, Goal
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ["name", "amount", "tier"]
+        fields = ["name", "amount", "tier", "date"]
+        widgets = {"date": forms.DateInput(attrs={"type": "date"})}
 
 
 class StartFamilyForm(UserCreationForm):
@@ -46,4 +47,5 @@ class GoalForm(forms.ModelForm):
 class SimpleTransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ["name", "amount"]
+        fields = ["name", "amount", "date"]
+        widgets = {"date": forms.DateInput(attrs={"type": "date"})}

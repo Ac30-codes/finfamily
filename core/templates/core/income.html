@@ -16,6 +16,7 @@
         {% csrf_token %}
         <p>Name: {{ form.name }}</p>
         <p>Amount: {{ form.amount }}</p>
+        <p>Date: {{ form.date }}</p>
         <button type="submit">Add income</button>
     </form>
 </div>
@@ -23,11 +24,12 @@
 <h2>Income entries</h2>
 {% if incomes %}
 <table>
-    <tr><th>Name</th><th>Amount</th><th>Member</th><th></th></tr>
+    <tr><th>Name</th><th>Amount</th><th>Date</th><th>Member</th><th></th></tr>
     {% for t in incomes %}
     <tr>
         <td>{{ t.name }}</td>
         <td>₹{{ t.amount }}</td>
+        <td>{{ t.date }}</td>
         <td>{{ t.member.user.username }}</td>
         <td>
             <form method="post" style="margin:0;">

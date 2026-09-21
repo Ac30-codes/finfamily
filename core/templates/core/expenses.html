@@ -22,12 +22,13 @@
 <h2>Expense entries</h2>
 {% if items %}
 <table>
-    <tr><th>Name</th><th>Amount</th><th>Tier</th><th>Member</th><th></th></tr>
+    <tr><th>Name</th><th>Amount</th><th>Tier</th><th>Date</th><th>Member</th><th></th></tr>
     {% for t in items %}
     <tr>
         <td>{{ t.name }}</td>
         <td>₹{{ t.amount }}</td>
         <td><span class="badge t-{{ t.tier }}">{{ t.get_tier_display }}</span></td>
+        <td>{{ t.date }}</td>
         <td>{{ t.member.user.username }}</td>
         <td>
             <form method="post" style="margin:0;">
